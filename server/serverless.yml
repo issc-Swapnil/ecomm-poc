@@ -1,0 +1,30 @@
+service: product-service
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "dynamodb:Scan"
+        - "dynamodb:GetItem"
+      Resource: "arn:aws:dynamodb:us-east-1:*:table/product_list"
+
+functions:
+  fetchProducts:
+    handler: index.handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: api/v1/products
+          method: get
+          cors: true
+      - http:
+          path: api/v1/product/{id}
+          method: get
+          cors: true
+
+plugins:
+  - serverless-offline
